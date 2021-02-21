@@ -1,0 +1,68 @@
+---
+#Configuration for KeeapAlive
+keepalived_master_role: "MASTER"
+keepalived_backup_role: "BACKUP"
+keepalived_router_id_master: "1"
+keepalived_router_id_backup: "2"
+keepalived_shared_ip_master: "10.26.3.100/22"
+keepalived_shared_ip_backup: "10.26.3.101/22"
+keepalived_priority_master: "255"
+keepalived_priority_backup: "100"
+keepalived_id_master: "1"
+keepalived_id_backup: "2"
+master_ip: "192.168.1.103"
+backup_ip: "192.168.1.147"
+path_to_master: templates/keepalived_master.j2
+path_to_backup: templates/keepalived_backup.j2
+
+#Configuration for Nginx
+
+worker_processes: "auto"
+nginx_user: "nginx"
+worker_connections: "1024"
+nginx_client_max_body_size: "64m"
+nginx_multi_accept: "off"
+nginx_resolver_timeout: "5s"
+nginx_mime_file_path: "/etc/nginx/mime.types"
+nginx_default_type: "application/octet-stream"
+nginx_access_log: "/var/log/nginx/access.log"
+nginx_define_log: "main"
+nginx_sendfile: "on"
+nginx_tcp_nopush: "on"
+nginx_tcp_nodelay: "on"
+nginx_keepalived_timeout: "65"
+nginx_types_hash_max_size: "2048"
+nginx_path_to_conf_d: "/etc/nginx/conf.d/*.conf"
+path_error_log: "/var/log/nginx/error.log"
+
+#Configuration for gzip
+
+define_gzip: "on"
+gzip_vary: "on"
+gzip_types: "text/plain text/css text/xml text/javascript application/x-javascript application/xml"
+gzip_disable: "MSIE [1-6]"
+gzip_comp_level: "5"
+
+#Configuration for upstream
+
+name_upstream: "appset"
+type_for_balancing: "least_conn"
+server_address_1: "10.26.1.99:8080"
+server_address_2: "10.26.1.195:8080"
+define_weight_1: "5"
+define_max_fails: "3"
+define_weight_2: "1"
+path_to_nginx: templates/nginx.j2
+define_keepalive: "16"
+
+#Server configuration
+
+listen_port: "80"
+listen_ipv6: "[::]:80 default_server"
+define_server_name: "www.oms.com oms.com"
+server_access_log: "/var/log/nginx/tomcats-access.log"
+server_type_log: "main"
+server_error_log: "/var/log/nginx/tomcats-errors.log"
+type_error_log: "warn"
+path_to_app: "/opt/tomcat/webapps/OMS"
+

@@ -1,0 +1,50 @@
+
+- name: Restart Nginx
+  service:
+   name: nginx
+   state: restarted
+
+- name: set httpd_can_network_relay selinux  
+  command: setsebool -P httpd_can_network_relay 1
+
+- name: permit http/https traffic
+  command: firewall-cmd --zone=dmz --permanent --add-service=http --add-service=https
+
+- name: Add port to firewalld
+  command: firewall-cmd --zone=dmz --permanent --add-port=8080/tcp --add-port=443/tcp
+
+
+#- name: permit http/https traffic 
+#  service:
+#  name: firewalld "{{ item }}"
+#  permanent: yes
+#  state: enabled
+#  loop:
+#   - http
+#   - https
+
+#- name: Add port to firewalld
+#- firewalld:
+#    port: "{{ item }}"
+#    permanent: yes
+#    state: enabled
+#    loop:
+#    - 8080/tcp
+#    - 443/tcp
+
+
+- name: Restart firewalld
+  service:
+    name: firewalld
+    state: restarted
+
+- name: Start keepalived
+  service:
+    name: keepalived
+    state: started
+
+
+- name: restart keepalived
+  service:
+    name: keepalived
+    state: restarted

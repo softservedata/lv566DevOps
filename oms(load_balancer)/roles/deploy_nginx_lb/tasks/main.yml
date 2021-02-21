@@ -1,0 +1,64 @@
+---
+- name: Install Nginx
+  yum:
+      name: "nginx"
+      state: present
+      update_cache: yes
+  notify:
+    - permit http/https traffic
+    - Add port to firewalld
+    - set httpd_can_network_relay selinux
+
+- name: Start & Enable Nginx
+  service:
+      name: "nginx"
+      state: started
+      enabled: yes
+  notify:
+     - Restart firewalld
+
+- name: Disable Nginx default website
+  file:
+    path: /etc/nginx/conf.d/*.*
+    state: absent
+
+- name: Deploy configuration file
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify:
+    - Restart Nginx
+
+- name: install Keepalived
+  yum:
+    name: "keepalived"
+    state: present
+    update_cache: yes
+
+- name: start & enable keepalived
+  service:
+    name: "keepalived"
+    state: started
+    enabled: yes
+
+- name: Remove config keepalived
+  file:
+    path: /etc/keepalived/*.*
+    state: absent
+
+- name: Deploy configuration for Master
+  template:
+      src: "{{ path_to_master }}"
+      dest: /etc/keepalived/keepalived.conf
+  when: ansible_default_ipv4.address  == master_ip
+  notify:
+   - restart keepalived
+
+- name: Deploy configuration for Backup
+  template:
+      src: "{{ path_to_backup }}"
+      dest: /etc/keepalived/keepalived.conf
+  when: ansible_default_ipv4.address == backup_ip
+  notify:
+   - restart keepalived
+

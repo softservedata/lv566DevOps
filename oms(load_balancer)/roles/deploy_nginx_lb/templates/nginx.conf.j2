@@ -1,0 +1,60 @@
+ user {{ nginx_user }};
+ worker_processes {{ worker_processes }};
+ error_log  {{ path_error_log }} {{ type_error_log }};
+ pid        /var/run/nginx.pid;
+include {{ nginx_path_to_conf_d }} ;
+events {
+    worker_connections {{ worker_connections }} ;
+        multi_accept {{ nginx_multi_accept }} ; }
+http {
+resolver_timeout {{ nginx_resolver_timeout }} ; #time for resolv
+    include      {{ nginx_mime_file_path }} ;
+    default_type {{ nginx_default_type }} ;
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+    access_log  {{ nginx_access_log }}  {{ nginx_define_log }} ;
+    sendfile            {{ nginx_sendfile }} ;
+    tcp_nopush          {{ nginx_tcp_nopush }} ;
+    tcp_nodelay         {{ nginx_tcp_nodelay }} ;
+    keepalive_timeout   {{ nginx_keepalived_timeout }} ;
+    types_hash_max_size {{ nginx_types_hash_max_size }} ;
+#GZIP
+gzip  {{ define_gzip }}; #enables gzip compression
+gzip_vary {{ gzip_vary }}; #tells proxies cache gzipped and regular versions
+gzip_types {{ gzip_types }}; #enables the types of files that can be compressed
+gzip_disable {{ gzip_disable }};
+gzip_comp_level {{ gzip_comp_level }};
+#Upstream servers
+        upstream {{ name_upstream }} {
+        {{ type_for_balancing }};
+        server {{ server_address_1 }} weight={{ define_weight_1 }}  max_fails={{ define_max_fails }};
+        server {{ server_address_2 }}  weight={{ define_weight_2 }} ; #default weight =1
+        keepalive {{ define_keepalive }}; }
+#Server configuration
+                        server {
+        listen {{ listen_port }};
+        listen       {{ listen_ipv6 }};
+        server_name {{ define_server_name }};
+        client_max_body_size {{ nginx_client_max_body_size }};
+        access_log {{ nginx_access_log }} {{ server_type_log }}; #Log files for our upstream
+        error_log  {{ server_error_log }} {{ type_error_log }}; #Log files with error for our upstream
+         location /static {
+         root  {{ path_to_app }};  }
+        location / {
+       proxy_pass http://{{ name_upstream }};
+       proxy_set_header Host $http_host;
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-Host $host;
+       proxy_set_header X-Forwarded-Server $host;
+       proxy_set_header Upgrade $http_upgrade; # websocket reverce proxy
+       proxy_set_header Connection "upgrade"; # websocket reverce proxy
+       proxy_no_cache 1;  }
+         error_page 404 /404.html;
+        location = /404.html {
+        }
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+}
+}

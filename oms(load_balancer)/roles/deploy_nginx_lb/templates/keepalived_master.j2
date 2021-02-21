@@ -1,0 +1,17 @@
+vrrp_instatce nginx1 {
+	state {{ keepalived_master_role }}
+	interface {{ ansible_default_ipv4.alias }}
+	virtual_router_id {{ keepalived_router_id_master }}
+	priority {{ keepalived_priority_master }}
+	virtual_ipaddress	{
+	   {{ keepalived_shared_ip_master }} dev {{ ansible_default_ipv4.alias }} label {{ ansible_default_ipv4.alias }}:{{ keepalived_id_master }}	}
+}
+vrrp_instance nginx2 {
+	state {{ keepalived_backup_role }}
+	interface {{ ansible_default_ipv4.alias }}
+	virtual_router_id {{ keepalived_router_id_backup }}
+	priority {{ keepalived_priority_backup }}
+ 	virtual_ipaddress       {
+          {{ keepalived_shared_ip_backup }} dev {{ ansible_default_ipv4.alias }} label {{ ansible_default_ipv4.alias }}:{{ keepalived_id_backup }}
+        }
+}
