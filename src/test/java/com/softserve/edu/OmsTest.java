@@ -24,7 +24,7 @@ public class OmsTest {
 	private static WebDriver driver;
 	private static String currentUrl;
 
-	@BeforeClass
+	//@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		System.out.println("@BeforeClass setUpBeforeClass()");
 		WebDriverManager.chromedriver().setup();
@@ -51,14 +51,14 @@ public class OmsTest {
 		}
 	}
 
-	@AfterClass
+	//@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 		System.out.println("@AfterClass tearDownAfterClass()");
 		System.out.println("driver.quit()");
 		driver.quit();
 	}
 
-	@Before
+	//@Before
 	public void setUp() throws Exception {
 		System.out.println("\t@Before setUp()");
 		System.out.println("\tgotoUrl(" + currentUrl + ")");
@@ -66,7 +66,7 @@ public class OmsTest {
 		presentationSleep();
 	}
 
-	@After
+	//@After
 	public void tearDown() throws Exception {
 		System.out.println("\t@After tearDown()");
 		System.out.println("\tdeleteAllCookies()");
@@ -74,7 +74,7 @@ public class OmsTest {
 		presentationSleep();
 	}
 
-	@Test
+	//@Test
 	public void checkLogin() {
 		System.out.println("\t\tType username");
 		driver.findElement(By.name("j_username")).clear();
