@@ -32,10 +32,13 @@ public class AppReg {
 		//String pattern = "\\b\\w*([\\w])\\1\\w*\\b";
 		//String text = "letter abba work";
 	    //
-	    String pattern ="https?://(\\w+\\.)+\\w{2,}(:\\d{1,5})?(/\\w+)*/?(\\?\\w+=\\w+(&\\w+=\\w+)*)?";
+	    //String pattern ="https?://(\\w+\\.)+\\w{2,}(:\\d{1,5})?(/\\w+)*/?(\\?\\w+=\\w+(&\\w+=\\w+)*)?";
 	    //String text = "https://www.google.com:8080/api/users/1?key1=val1&k2=v2";
-	    String text = "http://www.google.com";
+	    //String text = "http://www.google.com";
 		//
+	    String pattern = "(\\d+\\.)+\\d+";
+	    String text = "first 192.168.103.141, second 192.168.103.142, 192.168.103.143";
+	    //
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(text);
 		//
