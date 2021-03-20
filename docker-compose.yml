@@ -1,0 +1,43 @@
+version: '3.4'
+services:
+  web:
+     image: gitlab/gitlab-ce:11.11.2-ce.0
+     restart: always
+     depends_on:
+       - redis
+       - postgresql
+     environment:
+       GITLAB_OMNIBUS_CONFIG: |
+         postgresql['enable'] = false
+         gitlab_rails['db_username'] = "gitlab"
+         gitlab_rails['db_password'] = "gitlab"
+         gitlab_rails['db_host'] = "postgresql"
+         gitlab_rails['db_database'] = "gitlabhq_production"
+         gitlab_rails['db_adapter'] = 'postgresql'
+         gitlab_rails['db_encoding'] = 'utf8'
+         redis['enable'] = false
+         gitlab_rails['redis_host'] = 'redis'
+         gitlab_rails['redis_port'] = '6379'
+     ports:
+       - '80:80'
+       - '2222:22'
+     volumes:
+       - /srv/gitlab/data:/var/opt/gitlab
+       - /srv/gitlab/logs:/var/log/gitlab
+       - /srv/gitlab/config:/etc/gitlab
+
+  postgresql:
+     image: postgres:9.6.1
+     restart: always
+     environment:
+       - POSTGRES_USER=gitlab
+       - POSTGRES_PASSWORD=gitlab
+       - POSTGRES_DB=gitlabhq_production
+     volumes:
+       - /srv/postgresql:/var/lib/postgresql/data
+
+  redis:
+     image: redis:3.0.7
+     restart: always
+     volumes:
+       - /srv/redis:/var/lib/redis
